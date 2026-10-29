@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقعي الخاص</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- الهيدر / الشريط العلوي -->
+    <header class="navbar">
+        <div class="logo">⚡ موقعي <span>الخاص</span></div>
+        <button class="admin-btn" onclick="toggleAdminPanel()">⚙️ لوحة التحكم والإعدادات</button>
+    </header>
+
+    <main class="container">
+        
+        <!-- لوحة التحكم وإدارة الإعدادات والمنتجات -->
+        <section id="admin-panel" class="admin-section hidden">
+            <h2>⚙️ إعدادات المتجر والتحويل</h2>
+            <form id="settings-form" onsubmit="saveSettings(event)" style="margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+                <div class="form-group">
+                    <label>رقم الواتساب لتلقي الطلبات (بدون علامة +، مع المفتاح الدولي):</label>
+                    <input type="text" id="setting-phone" placeholder="مثال: 966500000000" required>
+                </div>
+                <div class="form-group">
+                    <label>تفاصيل الحساب البنكي / طرق الدفع:</label>
+                    <input type="text" id="setting-bank" placeholder="مثال: البنك الأهلي: 123456789 - اسم المستفيد: فلان">
+                </div>
+                <button type="submit" class="btn btn-save">حفظ الإعدادات العامة</button>
+            </form>
+
+            <h2>📦 إدارة المنتجات (إضافة / تعديل)</h2>
+            <form id="product-form" onsubmit="handleProductSubmit(event)">
+                <input type="hidden" id="prod-id">
+                
+                <div class="form-group">
+                    <label>اسم المنتج / الخدمة:</label>
+                    <input type="text" id="prod-title" placeholder="مثال: المنتج الأول" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>السعر:</label>
+                    <input type="number" id="prod-price" placeholder="مثال: 50" required>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف قصير / التفاصيل:</label>
+                    <input type="text" id="prod-duration" placeholder="اكتب تفاصيل المنتج هنا..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>صورة المنتج من الجهاز (اختياري - ليست إجبارية):</label>
+                    <input type="file" id="prod-image-file" accept="image/*">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">حفظ المنتج</button>
+                    <button type="button" class="btn btn-cancel" onclick="resetForm()">إلغاء</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- قسم عرض المنتجات -->
+        <section class="store-section">
+            <h1 class="main-title">منتجاتنا والخدمات المتاحة</h1>
+            <div id="products-grid" class="products-grid">
+                <!-- يتم تحميل المنتجات هنا -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- نافذة الطلب والدفع المباشر -->
+    <div id="buy-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-product-name">تفاصيل الطلب</h2>
+            <p class="modal-price">المبلغ المطلوب: <strong id="modal-product-price">0</strong></p>
+            
+            <div class="bank-details">
+                <h3>💳 طرق التحويل المتاحة:</h3>
+                <p id="modal-bank-text">جاري تحميل بيانات الحساب...</p>
+            </div>
+
+            <p class="instructions">بعد إتمام التحويل، اضغط على الزر أدناه لإرسال صورة الإيصال عبر الواتساب لإكمال طلبك.</p>
+            
+            <a id="whatsapp-link" href="#" target="_blank" class="btn btn-whatsapp">📱 إرسال الإيصال عبر الواتساب</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

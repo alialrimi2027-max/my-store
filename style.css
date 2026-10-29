@@ -1,0 +1,229 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding-bottom: 50px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    padding: 18px 8%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.logo span {
+    color: #38bdf8;
+}
+
+.admin-btn {
+    background: #334155;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.admin-btn:hover {
+    background: #475569;
+}
+
+.container {
+    width: 85%;
+    max-width: 1100px;
+    margin: 30px auto;
+}
+
+.main-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #e2e8f0;
+}
+
+/* شبكة المنتجات */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background-color: #1e293b;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.card img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 auto 15px;
+    border-radius: 8px;
+}
+
+.card h3 {
+    margin-bottom: 8px;
+    color: #f8fafc;
+}
+
+.card .duration {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.card .price {
+    font-size: 1.3rem;
+    color: #38bdf8;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-buy {
+    background-color: #38bdf8;
+    color: #0f172a;
+    width: 100%;
+}
+
+.btn-buy:hover {
+    background-color: #0284c7;
+    color: #fff;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-edit { background: #f59e0b; color: #fff; flex: 1; }
+.btn-delete { background: #ef4444; color: #fff; flex: 1; }
+
+/* لوحة التحكم */
+.admin-section {
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    border: 1px solid #38bdf8;
+}
+
+.admin-section h2 {
+    margin-bottom: 20px;
+    color: #38bdf8;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #cbd5e1;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #fff;
+    border-radius: 6px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-save { background: #22c55e; color: #fff; }
+.btn-cancel { background: #64748b; color: #fff; }
+
+.hidden { display: none !important; }
+
+/* النافذة المنبثقة للتحويل */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    border: 1px solid #475569;
+}
+
+.close-btn {
+    position: absolute;
+    left: 15px; top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #94a3b8;
+}
+
+.bank-details {
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    line-height: 1.8;
+}
+
+.instructions {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-bottom: 15px;
+}
+
+.btn-whatsapp {
+    display: block;
+    background-color: #25d366;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 6px;
+}
