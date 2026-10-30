@@ -1,33 +1,68 @@
-// جلب المنتجات وإعدادات المتجر من الذاكرة المحلية
-let products = JSON.parse(localStorage.getItem('my_store_products')) || [];
-let storeSettings = JSON.parse(localStorage.getItem('my_store_settings')) || {
+// رابط قاعدة البيانات السحابية الخاصة بك
+const API_URL = 'https://api.npoint.io/b3a3127479e47111cc27';
+
+let products = [];
+let storeSettings = {
     phone: "966500000000",
     bank: "البنك الأهلي: 1234567890 - اسم المستفيد: اسمك"
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+// جلب البيانات من السحابة عند فتح الصفحة
+async function fetchCloudData() {
+    try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        if (data) {
+            products = data.products || [];
+            storeSettings = data.settings || storeSettings;
+        }
+    } catch (error) {
+        console.error('خطأ في جلب البيانات من السحابة:', error);
+    }
+    
     renderProducts();
     
-    // تعبئة حقول الإعدادات فقط إذا كانت موجودة في الصفحة الحالية (لوحة التحكم)
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
     if (phoneInput && bankInput) {
         phoneInput.value = storeSettings.phone;
         bankInput.value = storeSettings.bank;
     }
+}
+
+// حفظ البيانات في السحابة
+async function saveToCloud() {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                products: products,
+                settings: storeSettings
+            })
+        });
+    } catch (error) {
+        console.error('خطأ في الحفظ السحابي:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCloudData();
 });
 
 // حفظ الإعدادات العامة للمتجر
-function saveSettings(event) {
+async function saveSettings(event) {
     event.preventDefault();
     storeSettings.phone = document.getElementById('setting-phone').value;
     storeSettings.bank = document.getElementById('setting-bank').value;
     
-    localStorage.setItem('my_store_settings', JSON.stringify(storeSettings));
-    alert('تم حفظ الإعدادات العامة بنجاح!');
+    await saveToCloud();
+    alert('تم حفظ الإعدادات العامة وتحديثها سحابياً بنجاح!');
 }
 
-// عرض المنتجات (يختلف شكل العرض بناءً على الصفحة: زوار أم لوحة تحكم)
+// عرض المنتجات
 function renderProducts() {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
@@ -39,7 +74,6 @@ function renderProducts() {
         return;
     }
 
-    // التحقق مما إذا كانت الصفحة الحالية هي صفحة لوحة التحكم (admin.html) أم المتجر الرئيسي (index.html)
     const isAdminPage = window.location.pathname.includes('admin.html');
 
     products.forEach(product => {
@@ -47,7 +81,6 @@ function renderProducts() {
         card.className = 'card';
         
         if (isAdminPage) {
-            // تصميم البطاقة في لوحة التحكم (مع أزرار التعديل والحذف)
             card.innerHTML = `
                 <div>
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
@@ -63,7 +96,6 @@ function renderProducts() {
                 </div>
             `;
         } else {
-            // تصميم البطاقة في المتجر الرئيسي للزوار (زر الشراء فقط وبدون أي أزرار تحكم)
             card.innerHTML = `
                 <div>
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
@@ -78,8 +110,6 @@ function renderProducts() {
         }
         grid.appendChild(card);
     });
-
-    localStorage.setItem('my_store_products', JSON.stringify(products));
 }
 
 // إضافة أو تعديل منتج
@@ -109,7 +139,7 @@ function handleProductSubmit(event) {
     }
 }
 
-function saveProductData(id, title, price, duration, image) {
+async function saveProductData(id, title, price, duration, image) {
     if (id) {
         const index = products.findIndex(p => p.id == id);
         products[index] = { id: Number(id), title, price, duration, image };
@@ -124,8 +154,10 @@ function saveProductData(id, title, price, duration, image) {
         products.push(newProduct);
     }
 
+    await saveToCloud();
     resetForm();
     renderProducts();
+    alert('تم حفظ المنتج وتحديثه في المتجر العام سحابياً بنجاح!');
 }
 
 // تعديل منتج
@@ -142,10 +174,12 @@ function editProduct(id) {
 }
 
 // حذف منتج
-function deleteProduct(id) {
+async function deleteProduct(id) {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
         products = products.filter(p => p.id !== id);
+        await saveToCloud();
         renderProducts();
+        alert('تم حذف المنتج بنجاح!');
     }
 }
 
@@ -164,7 +198,6 @@ function openBuyModal(productId) {
 
     document.getElementById('modal-product-name').textContent = `طلب: ${product.title}`;
     document.getElementById('modal-product-price').textContent = `${product.price} ريال`;
-    
     document.getElementById('modal-bank-text').textContent = storeSettings.bank;
 
     const message = encodeURIComponent(`مرحباً، أريد شراء: ${product.title}\nالمبلغ: ${product.price} ريال\nمرفق إيصال التحويل:`);
