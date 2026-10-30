@@ -1,6 +1,6 @@
 // استيراد مكتبات Firebase المطلوبة
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 // إعدادات مشروعك السحابي على Firebase
 const firebaseConfig = {
@@ -23,7 +23,7 @@ let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadProductsFromFirebase();
+    loadProductsFromFirebase(); // البدء بالاستماع المباشر والحي للبيانات
     
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
@@ -43,17 +43,21 @@ function saveSettings(event) {
     alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
-// جلب المنتجات من قاعدة بيانات سحابة Firebase
-async function loadProductsFromFirebase() {
+// جلب المنتجات والاصغاء للتغييرات بشكل حي وفوري من سحابة Firebase
+function loadProductsFromFirebase() {
     try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        products = [];
-        querySnapshot.forEach((documentSnapshot) => {
-            products.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
+        // onSnapshot تراقب قاعدة البيانات لحظياً وتحدث الواجهة تلقائياً وعند تحديث الصفحة
+        onSnapshot(collection(db, "products"), (querySnapshot) => {
+            products = [];
+            querySnapshot.forEach((documentSnapshot) => {
+                products.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
+            });
+            renderProducts();
+        }, (error) => {
+            console.error("خطأ في المراقبة الحية للسحابة: ", error);
         });
-        renderProducts();
     } catch (e) {
-        console.error("خطأ أثناء جلب المنتجات من السحابة: ", e);
+        console.error("خطأ أثناء إعداد مراقبة المنتجات: ", e);
     }
 }
 
@@ -163,13 +167,9 @@ async function saveProductData(id, title, price, duration, image) {
                 createdAt: Date.now()
             });
         }
-        
-        // مزامنة صامتة لجلب الأيدي الحقيقي من السحابة
-        loadProductsFromFirebase();
     } catch (e) {
         console.error("خطأ أثناء الحفظ في السحابة: ", e);
         alert('حدث خطأ في الاتصال بالشبكة، يرجى التحقق من الإنترنت.');
-        loadProductsFromFirebase(); // استعادة القائمة الصحيحة في حال وجود خطأ
     }
 }
 
@@ -198,7 +198,6 @@ window.deleteProduct = async function(id) {
             await deleteDoc(doc(db, "products", String(id)));
         } catch (e) {
             console.error("خطأ أثناء الحذف: ", e);
-            loadProductsFromFirebase();
         }
     }
 }
