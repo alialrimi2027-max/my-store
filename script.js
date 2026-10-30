@@ -1,5 +1,5 @@
 // رابط قاعدة البيانات السحابية الخاصة بك
-const API_URL = 'https://api.npoint.io/b3a3127479e47111cc27';
+const DATA_URL = 'https://raw.githubusercontent.com/alialrimi2027-max/my-store/main/products.json';
 
 let products = [];
 let storeSettings = {
