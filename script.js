@@ -107,7 +107,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج (مع منع التكرار بتعطيل الزر مؤقتاً أثناء الحفظ)
+// إضافة أو تعديل منتج بسرعة فائقة
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -135,15 +135,22 @@ function handleProductSubmit(event) {
 }
 
 async function saveProductData(id, title, price, duration, image) {
-    // البحث عن زر الحفظ لتعطيله أثناء العملية لمنع الضغط المتكرر
-    const saveButton = document.querySelector('#product-form button[type="submit"]');
+    // 1. تفريغ الحقول وإظهار المنتج في القائمة فوراً (بسرعة البرق دون انتظار)
+    const tempId = id || 'temp_' + Date.now();
+    const newProductObj = { id: tempId, title, price, duration, image };
+
+    if (id) {
+        const index = products.findIndex(p => p.id == id);
+        if (index !== -1) products[index] = newProductObj;
+    } else {
+        products.unshift(newProductObj); // يظهر في أعلى القائمة فوراً
+    }
+    
+    renderProducts(); // تحديث الشاشة محلياً ولحظياً
+    resetForm();     // تفريغ الخانات فوراً
 
     try {
-        if (saveButton) {
-            saveButton.disabled = true;
-            saveButton.textContent = 'جاري الحفظ...';
-        }
-
+        // 2. إرسال البيانات للسحابة في الخلفية بصمت
         if (id) {
             const productRef = doc(db, "products", String(id));
             await setDoc(productRef, { title, price, duration, image });
@@ -156,19 +163,13 @@ async function saveProductData(id, title, price, duration, image) {
                 createdAt: Date.now()
             });
         }
-
-        resetForm(); // تفريغ الحقول وإعادتها فارغة فوراً بعد الحفظ الناجح
-        await loadProductsFromFirebase(); 
-        alert('تم حفظ المنتج في السحابة بنجاح وتم تفريغ الخانات بنجاح! 🚀');
+        
+        // مزامنة صامتة لجلب الأيدي الحقيقي من السحابة
+        loadProductsFromFirebase();
     } catch (e) {
-        console.error("خطأ أثناء حفظ المنتج: ", e);
-        alert('حدث خطأ أثناء حفظ المنتج، يرجى المحاولة مرة أخرى.');
-    } finally {
-        // إعادة تفعيل الزر بعد الانتهاء
-        if (saveButton) {
-            saveButton.disabled = false;
-            saveButton.textContent = 'حفظ المنتج';
-        }
+        console.error("خطأ أثناء الحفظ في السحابة: ", e);
+        alert('حدث خطأ في الاتصال بالشبكة، يرجى التحقق من الإنترنت.');
+        loadProductsFromFirebase(); // استعادة القائمة الصحيحة في حال وجود خطأ
     }
 }
 
@@ -185,17 +186,19 @@ function editProduct(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// حذف منتج من سحابة Firebase
+// حذف منتج من سحابة Firebase بسرعة لحظية
 window.deleteProduct = async function(id) {
     if (confirm('هل أنت متأكد من حذف هذا المنتج من السحابة؟')) {
+        // الحذف المحلي الفوري للاستجابة السريعة
+        products = products.filter(p => p.id != id);
+        renderProducts();
+        resetForm();
+
         try {
             await deleteDoc(doc(db, "products", String(id)));
-            await loadProductsFromFirebase();
-            resetForm();
-            alert('تم حذف المنتج بنجاح!');
         } catch (e) {
             console.error("خطأ أثناء الحذف: ", e);
-            alert('حدث خطأ أثناء محاولة الحذف.');
+            loadProductsFromFirebase();
         }
     }
 }
