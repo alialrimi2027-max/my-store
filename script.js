@@ -1,12 +1,30 @@
-// المتجر يعتمد على الذاكرة المحلية المحدثة لضمان عدم الحذف التلقائي
-let products = JSON.parse(localStorage.getItem('store_products')) || [];
+// استيراد مكتبات Firebase المطلوبة
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+// إعدادات مشروعك السحابي على Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDBz4TYLVi2cHusS3a9A2Y_glg9YB3ViqU",
+  authDomain: "my-store-ed4c9.firebaseapp.com",
+  projectId: "my-store-ed4c9",
+  storageBucket: "my-store-ed4c9.firebasestorage.app",
+  messagingSenderId: "38264665893",
+  appId: "1:38264665893:web:02239c88c4586d9e750ccc"
+};
+
+// تهيئة Firebase وربط قاعدة البيانات
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// مصفوفة المنتجات والإعدادات في الذاكرة لتحديث الواجهة فوراً
+let products = [];
 let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
     phone: "966500000000",
     bank: "البنك الأهلي: 1234567890 - اسم المستفيد: اسمك"
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderProducts();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadProductsFromFirebase();
     
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
@@ -26,6 +44,20 @@ function saveSettings(event) {
     alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
+// جلب المنتجات من قاعدة بيانات سحابة Firebase
+async function loadProductsFromFirebase() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        products = [];
+        querySnapshot.forEach((documentSnapshot) => {
+            products.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
+        });
+        renderProducts();
+    } catch (e) {
+        console.error("خطأ أثناء جلب المنتجات من السحابة: ", e);
+    }
+}
+
 // عرض المنتجات في لوحة التحكم والمتجر العام
 function renderProducts() {
     const grid = document.getElementById('products-grid');
@@ -34,7 +66,7 @@ function renderProducts() {
     grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً في السحابة.</p>';
         return;
     }
 
@@ -54,8 +86,8 @@ function renderProducts() {
                 </div>
                 <div>
                     <div class="card-actions">
-                        <button class="btn btn-edit" onclick="editProduct(${product.id})">تعديل</button>
-                        <button class="btn btn-delete" onclick="deleteProduct(${product.id})">حذف</button>
+                        <button class="btn btn-edit" onclick="editProduct('${product.id}')">تعديل</button>
+                        <button class="btn btn-delete" onclick="deleteProduct('${product.id}')">حذف</button>
                     </div>
                 </div>
             `;
@@ -68,7 +100,7 @@ function renderProducts() {
                     <div class="price">${product.price} ريال</div>
                 </div>
                 <div>
-                    <button class="btn btn-buy" onclick="openBuyModal(${product.id})">شراء الآن</button>
+                    <button class="btn btn-buy" onclick="openBuyModal('${product.id}')">شراء الآن</button>
                 </div>
             `;
         }
@@ -76,7 +108,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج من لوحة التحكم بدون أي حذف تلقائي
+// إضافة أو تعديل منتج وإرساله للسحابة مباشرة
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -103,32 +135,35 @@ function handleProductSubmit(event) {
     }
 }
 
-function saveProductData(id, title, price, duration, image) {
-    if (id) {
-        const index = products.findIndex(p => p.id == id);
-        products[index] = { id: Number(id), title, price, duration, image };
-    } else {
-        const newProduct = {
-            id: Date.now(),
-            title,
-            price,
-            duration,
-            image
-        };
-        products.push(newProduct);
-    }
+async function saveProductData(id, title, price, duration, image) {
+    try {
+        if (id) {
+            // تحديث منتج موجود مسبقاً في Firebase
+            const productRef = doc(db, "products", String(id));
+            await setDoc(productRef, { title, price, duration, image });
+        } else {
+            // إضافة منتج جديد إلى مجموعة products في Firebase
+            await addDoc(collection(db, "products"), {
+                title,
+                price,
+                duration,
+                image,
+                createdAt: Date.now()
+            });
+        }
 
-    // حفظ البيانات بشكل دائم في المتصفح وجعلها ثابتة
-    localStorage.setItem('store_products', JSON.stringify(products));
-    
-    resetForm();
-    renderProducts();
-    alert('تم حفظ المنتج بنجاح ولن يتم حذفه تلقائياً أبداً!');
+        resetForm();
+        await loadProductsFromFirebase(); // إعادة تحميل المنتجات من السحابة لتحديث العرض
+        alert('تم حفظ المنتج في السحابة بنجاح ولن يتم حذفه نهائياً! 🚀');
+    } catch (e) {
+        console.error("خطأ أثناء حفظ المنتج: ", e);
+        alert('حدث خطأ أثناء حفظ المنتج، يرجى المحاولة مرة أخرى.');
+    }
 }
 
 // تعديل منتج
 function editProduct(id) {
-    const product = products.find(p => p.id === id);
+    const product = products.find(p => p.id == id);
     if (!product) return;
 
     document.getElementById('prod-id').value = product.id;
@@ -139,13 +174,17 @@ function editProduct(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// حذف منتج (فقط عند الضغط على زر حذف عمداً)
-function deleteProduct(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-        products = products.filter(p => p.id !== id);
-        localStorage.setItem('store_products', JSON.stringify(products));
-        renderProducts();
-        alert('تم حذف المنتج بنجاح!');
+// حذف منتج من سحابة Firebase
+window.deleteProduct = async function(id) {
+    if (confirm('هل أنت متأكد من حذف هذا المنتج من السحابة؟')) {
+        try {
+            await deleteDoc(doc(db, "products", String(id)));
+            await loadProductsFromFirebase();
+            alert('تم حذف المنتج بنجاح!');
+        } catch (e) {
+            console.error("خطأ أثناء الحذف: ", e);
+            alert('حدث خطأ أثناء محاولة الحذف.');
+        }
     }
 }
 
@@ -158,8 +197,8 @@ function resetForm() {
 }
 
 // فتح نافذة الشراء والتحويل
-function openBuyModal(productId) {
-    const product = products.find(p => p.id === productId);
+window.openBuyModal = function(productId) {
+    const product = products.find(p => p.id == productId);
     if (!product) return;
 
     document.getElementById('modal-product-name').textContent = `طلب: ${product.title}`;
@@ -174,6 +213,12 @@ function openBuyModal(productId) {
 }
 
 // إغلاق النافذة المنبثقة
-function closeModal() {
+window.closeModal = function() {
     document.getElementById('buy-modal').classList.add('hidden');
 }
+
+// ربط الدوال بالنافذة العامة لضمان عمل الأزرار بشكل سليم في HTML
+window.handleProductSubmit = handleProductSubmit;
+window.saveSettings = saveSettings;
+window.editProduct = editProduct;
+window.resetForm = resetForm;
