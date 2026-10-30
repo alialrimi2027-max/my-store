@@ -7,9 +7,14 @@ let storeSettings = JSON.parse(localStorage.getItem('my_store_settings')) || {
 
 document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
-    // تعبئة حقول الإعدادات بالقيم المحفوظة مسبقاً
-    document.getElementById('setting-phone').value = storeSettings.phone;
-    document.getElementById('setting-bank').value = storeSettings.bank;
+    
+    // تعبئة حقول الإعدادات فقط إذا كانت موجودة في الصفحة الحالية (لوحة التحكم)
+    const phoneInput = document.getElementById('setting-phone');
+    const bankInput = document.getElementById('setting-bank');
+    if (phoneInput && bankInput) {
+        phoneInput.value = storeSettings.phone;
+        bankInput.value = storeSettings.bank;
+    }
 });
 
 // حفظ الإعدادات العامة للمتجر
@@ -22,47 +27,62 @@ function saveSettings(event) {
     alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
-// عرض المنتجات
+// عرض المنتجات (يختلف شكل العرض بناءً على الصفحة: زوار أم لوحة تحكم)
 function renderProducts() {
     const grid = document.getElementById('products-grid');
+    if (!grid) return;
+
     grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً. استخدم لوحة التحكم لإضافة منتجك الأول.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً.</p>';
         return;
     }
+
+    // التحقق مما إذا كانت الصفحة الحالية هي صفحة لوحة التحكم (admin.html) أم المتجر الرئيسي (index.html)
+    const isAdminPage = window.location.pathname.includes('admin.html');
 
     products.forEach(product => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `
-            <div>
-                ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
-                <h3>${product.title}</h3>
-                <p class="duration">${product.duration}</p>
-                <div class="price">${product.price} ريال</div>
-            </div>
-            <div>
-                <button class="btn btn-buy" onclick="openBuyModal(${product.id})">شراء الآن</button>
-                <div class="card-actions">
-                    <button class="btn btn-edit" onclick="editProduct(${product.id})">تعديل</button>
-                    <button class="btn btn-delete" onclick="deleteProduct(${product.id})">حذف</button>
+        
+        if (isAdminPage) {
+            // تصميم البطاقة في لوحة التحكم (مع أزرار التعديل والحذف)
+            card.innerHTML = `
+                <div>
+                    ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
+                    <h3>${product.title}</h3>
+                    <p class="duration">${product.duration}</p>
+                    <div class="price">${product.price} ريال</div>
                 </div>
-            </div>
-        `;
+                <div>
+                    <div class="card-actions">
+                        <button class="btn btn-edit" onclick="editProduct(${product.id})">تعديل</button>
+                        <button class="btn btn-delete" onclick="deleteProduct(${product.id})">حذف</button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // تصميم البطاقة في المتجر الرئيسي للزوار (زر الشراء فقط وبدون أي أزرار تحكم)
+            card.innerHTML = `
+                <div>
+                    ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
+                    <h3>${product.title}</h3>
+                    <p class="duration">${product.duration}</p>
+                    <div class="price">${product.price} ريال</div>
+                </div>
+                <div>
+                    <button class="btn btn-buy" onclick="openBuyModal(${product.id})">شراء الآن</button>
+                </div>
+            `;
+        }
         grid.appendChild(card);
     });
 
     localStorage.setItem('my_store_products', JSON.stringify(products));
 }
 
-// إظهار وإخفاء لوحة التحكم
-function toggleAdminPanel() {
-    const panel = document.getElementById('admin-panel');
-    panel.classList.toggle('hidden');
-}
-
-// إضافة أو تعديل منتج (الصورة أصبحت اختيارية وليست إجبارية)
+// إضافة أو تعديل منتج
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -72,7 +92,7 @@ function handleProductSubmit(event) {
     const duration = document.getElementById('prod-duration').value;
     const fileInput = document.getElementById('prod-image-file');
 
-    if (fileInput.files && fileInput.files[0]) {
+    if (fileInput && fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.onload = function(e) {
             const imageDataUrl = e.target.result;
@@ -118,13 +138,12 @@ function editProduct(id) {
     document.getElementById('prod-price').value = product.price;
     document.getElementById('prod-duration').value = product.duration;
 
-    document.getElementById('admin-panel').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // حذف منتج
 function deleteProduct(id) {
-    if (confirm('هل أنت تأكد من حذف هذا المنتج؟')) {
+    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
         products = products.filter(p => p.id !== id);
         renderProducts();
     }
@@ -132,8 +151,10 @@ function deleteProduct(id) {
 
 // إعادة ضبط النموذج
 function resetForm() {
-    document.getElementById('product-form').reset();
-    document.getElementById('prod-id').value = '';
+    const form = document.getElementById('product-form');
+    if (form) form.reset();
+    const prodId = document.getElementById('prod-id');
+    if (prodId) prodId.value = '';
 }
 
 // فتح نافذة الشراء والتحويل
@@ -144,7 +165,6 @@ function openBuyModal(productId) {
     document.getElementById('modal-product-name').textContent = `طلب: ${product.title}`;
     document.getElementById('modal-product-price').textContent = `${product.price} ريال`;
     
-    // عرض بيانات البنك المحدثة من الإعدادات
     document.getElementById('modal-bank-text').textContent = storeSettings.bank;
 
     const message = encodeURIComponent(`مرحباً، أريد شراء: ${product.title}\nالمبلغ: ${product.price} ريال\nمرفق إيصال التحويل:`);

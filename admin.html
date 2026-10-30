@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - موقعي الخاص</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">⚙️ لوحة <span>التحكم</span></div>
+        <a href="index.html" class="btn btn-cancel" style="text-decoration: none; padding: 5px 15px;">عرض المتجر 🌐</a>
+    </header>
+
+    <main class="container">
+        <!-- لوحة التحكم وإدارة الإعدادات والمنتجات -->
+        <section id="admin-panel" class="admin-section" style="margin-top: 20px;">
+            <h2>⚙️ إعدادات المتجر والتحويل</h2>
+            <form id="settings-form" onsubmit="saveSettings(event)" style="margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
+                <div class="form-group">
+                    <label>رقم الواتساب لتلقي الطلبات (بدون علامة +، مع المفتاح الدولي):</label>
+                    <input type="text" id="setting-phone" placeholder="مثال: 966500000000" required>
+                </div>
+                <div class="form-group">
+                    <label>تفاصيل الحساب البنكي / طرق الدفع:</label>
+                    <input type="text" id="setting-bank" placeholder="مثال: البنك الأهلي: 123456789 - اسم المستفيد: فلان">
+                </div>
+                <button type="submit" class="btn btn-save">حفظ الإعدادات العامة</button>
+            </form>
+
+            <h2>📦 إدارة المنتجات (إضافة / تعديل / حذف)</h2>
+            <form id="product-form" onsubmit="handleProductSubmit(event)">
+                <input type="hidden" id="prod-id">
+                
+                <div class="form-group">
+                    <label>اسم المنتج / الخدمة:</label>
+                    <input type="text" id="prod-title" placeholder="مثال: المنتج الأول" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>السعر:</label>
+                    <input type="number" id="prod-price" placeholder="مثال: 50" required>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف قصير / التفاصيل:</label>
+                    <input type="text" id="prod-duration" placeholder="اكتب تفاصيل المنتج هنا..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>صورة المنتج من الجهاز:</label>
+                    <input type="file" id="prod-image-file" accept="image/*">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">حفظ المنتج</button>
+                    <button type="button" class="btn btn-cancel" onclick="resetForm()">إلغاء</button>
+                </div>
+            </form>
+
+            <!-- جدول أو عرض مصغر للمنتجات في لوحة التحكم لإدارتها -->
+            <h2 style="margin-top: 40px;">قائمة المنتجات الحالية:</h2>
+            <div id="products-grid" class="products-grid" style="margin-top: 20px;">
+                <!-- يتم تحميل المنتجات هنا لأجل التعديل والحذف -->
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
