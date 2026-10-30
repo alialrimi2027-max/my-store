@@ -1,6 +1,6 @@
-// استيراد مكتبات Firebase المطلوبة
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+// استيراد مكتبات Firebase من شبكة بديلة لتعمل بدون VPN
+import { initializeApp } from "https://unpkg.com/firebase@11.1.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://unpkg.com/firebase@11.1.0/firebase-firestore.js";
 
 // إعدادات مشروعك السحابي على Firebase
 const firebaseConfig = {
