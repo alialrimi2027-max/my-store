@@ -107,7 +107,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج وإرساله للسحابة مع مسح الحقول بعد الحفظ
+// إضافة أو تعديل منتج (مع منع التكرار بتعطيل الزر مؤقتاً أثناء الحفظ)
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -135,7 +135,15 @@ function handleProductSubmit(event) {
 }
 
 async function saveProductData(id, title, price, duration, image) {
+    // البحث عن زر الحفظ لتعطيله أثناء العملية لمنع الضغط المتكرر
+    const saveButton = document.querySelector('#product-form button[type="submit"]');
+
     try {
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.textContent = 'جاري الحفظ...';
+        }
+
         if (id) {
             const productRef = doc(db, "products", String(id));
             await setDoc(productRef, { title, price, duration, image });
@@ -155,6 +163,12 @@ async function saveProductData(id, title, price, duration, image) {
     } catch (e) {
         console.error("خطأ أثناء حفظ المنتج: ", e);
         alert('حدث خطأ أثناء حفظ المنتج، يرجى المحاولة مرة أخرى.');
+    } finally {
+        // إعادة تفعيل الزر بعد الانتهاء
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = 'حفظ المنتج';
+        }
     }
 }
 
