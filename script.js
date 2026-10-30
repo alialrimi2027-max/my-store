@@ -1,25 +1,11 @@
-// رابط قاعدة البيانات السحابية الخاصة بك
-const DATA_URL = 'https://raw.githubusercontent.com/alialrimi2027-max/my-store/main/products.json';
-
-let products = [];
-let storeSettings = {
+// المتجر يعتمد على الذاكرة المحلية المحدثة لضمان عدم الحذف التلقائي
+let products = JSON.parse(localStorage.getItem('store_products')) || [];
+let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
     phone: "966500000000",
     bank: "البنك الأهلي: 1234567890 - اسم المستفيد: اسمك"
 };
 
-// جلب البيانات من السحابة عند فتح الصفحة
-async function fetchCloudData() {
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        if (data) {
-            products = data.products || [];
-            storeSettings = data.settings || storeSettings;
-        }
-    } catch (error) {
-        console.error('خطأ في جلب البيانات من السحابة:', error);
-    }
-    
+document.addEventListener('DOMContentLoaded', () => {
     renderProducts();
     
     const phoneInput = document.getElementById('setting-phone');
@@ -28,41 +14,19 @@ async function fetchCloudData() {
         phoneInput.value = storeSettings.phone;
         bankInput.value = storeSettings.bank;
     }
-}
-
-// حفظ البيانات في السحابة
-async function saveToCloud() {
-    try {
-        await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                products: products,
-                settings: storeSettings
-            })
-        });
-    } catch (error) {
-        console.error('خطأ في الحفظ السحابي:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    fetchCloudData();
 });
 
 // حفظ الإعدادات العامة للمتجر
-async function saveSettings(event) {
+function saveSettings(event) {
     event.preventDefault();
     storeSettings.phone = document.getElementById('setting-phone').value;
     storeSettings.bank = document.getElementById('setting-bank').value;
     
-    await saveToCloud();
-    alert('تم حفظ الإعدادات العامة وتحديثها سحابياً بنجاح!');
+    localStorage.setItem('store_settings', JSON.stringify(storeSettings));
+    alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
-// عرض المنتجات
+// عرض المنتجات في لوحة التحكم والمتجر العام
 function renderProducts() {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
@@ -112,7 +76,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج
+// إضافة أو تعديل منتج من لوحة التحكم بدون أي حذف تلقائي
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -139,7 +103,7 @@ function handleProductSubmit(event) {
     }
 }
 
-async function saveProductData(id, title, price, duration, image) {
+function saveProductData(id, title, price, duration, image) {
     if (id) {
         const index = products.findIndex(p => p.id == id);
         products[index] = { id: Number(id), title, price, duration, image };
@@ -154,10 +118,12 @@ async function saveProductData(id, title, price, duration, image) {
         products.push(newProduct);
     }
 
-    await saveToCloud();
+    // حفظ البيانات بشكل دائم في المتصفح وجعلها ثابتة
+    localStorage.setItem('store_products', JSON.stringify(products));
+    
     resetForm();
     renderProducts();
-    alert('تم حفظ المنتج وتحديثه في المتجر العام سحابياً بنجاح!');
+    alert('تم حفظ المنتج بنجاح ولن يتم حذفه تلقائياً أبداً!');
 }
 
 // تعديل منتج
@@ -173,11 +139,11 @@ function editProduct(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// حذف منتج
-async function deleteProduct(id) {
+// حذف منتج (فقط عند الضغط على زر حذف عمداً)
+function deleteProduct(id) {
     if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
         products = products.filter(p => p.id !== id);
-        await saveToCloud();
+        localStorage.setItem('store_products', JSON.stringify(products));
         renderProducts();
         alert('تم حذف المنتج بنجاح!');
     }
