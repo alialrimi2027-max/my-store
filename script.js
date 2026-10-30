@@ -23,7 +23,7 @@ let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-    loadProductsFromFirebase(); // البدء بالاستماع المباشر والحي للبيانات
+    loadProductsFromFirebase(); // جلب فوري من الذاكرة المحلية ثم مزامنة حية
     
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
@@ -43,16 +43,31 @@ function saveSettings(event) {
     alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
-// جلب المنتجات والاصغاء للتغييرات بشكل حي وفوري من سحابة Firebase
+// جلب المنتجات بشكل فوري من الذاكرة المحلية ثم مزامنتها مع Firebase في الخلفية
 function loadProductsFromFirebase() {
+    // 1. قراءة المنتجات المخزنة محلياً وعرضها فوراً لمنع أي اختفاء أثناء التحديث
+    const cachedProducts = localStorage.getItem('cached_products');
+    if (cachedProducts) {
+        try {
+            products = JSON.parse(cachedProducts);
+            renderProducts(); // تظهر المنتجات في الفركشن الأول من الثانية دون أي اختفاء
+        } catch (e) {
+            console.error("خطأ في قراءة الذاكرة المؤقتة:", e);
+        }
+    }
+
     try {
-        // onSnapshot تراقب قاعدة البيانات لحظياً وتحدث الواجهة تلقائياً وعند تحديث الصفحة
+        // 2. الاستماع الفوري والحي للتغييرات من السحابة وتحديثها بصمت
         onSnapshot(collection(db, "products"), (querySnapshot) => {
             products = [];
             querySnapshot.forEach((documentSnapshot) => {
                 products.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
             });
-            renderProducts();
+            
+            // حفظ النسخة الجديدة محلياً لضمان الظهور الفوري المرة القادمة
+            localStorage.setItem('cached_products', JSON.stringify(products));
+            
+            renderProducts(); // تحديث الواجهة بأحدث البيانات من السحابة
         }, (error) => {
             console.error("خطأ في المراقبة الحية للسحابة: ", error);
         });
