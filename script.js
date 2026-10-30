@@ -16,7 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// مصفوفة المنتجات والإعدادات في الذاكرة لتحديث الواجهة فوراً
 let products = [];
 let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
     phone: "966500000000",
@@ -108,7 +107,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج وإرساله للسحابة مباشرة
+// إضافة أو تعديل منتج وإرساله للسحابة مع مسح الحقول بعد الحفظ
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -138,11 +137,9 @@ function handleProductSubmit(event) {
 async function saveProductData(id, title, price, duration, image) {
     try {
         if (id) {
-            // تحديث منتج موجود مسبقاً في Firebase
             const productRef = doc(db, "products", String(id));
             await setDoc(productRef, { title, price, duration, image });
         } else {
-            // إضافة منتج جديد إلى مجموعة products في Firebase
             await addDoc(collection(db, "products"), {
                 title,
                 price,
@@ -152,9 +149,9 @@ async function saveProductData(id, title, price, duration, image) {
             });
         }
 
-        resetForm();
-        await loadProductsFromFirebase(); // إعادة تحميل المنتجات من السحابة لتحديث العرض
-        alert('تم حفظ المنتج في السحابة بنجاح ولن يتم حذفه نهائياً! 🚀');
+        resetForm(); // تفريغ الحقول وإعادتها فارغة فوراً بعد الحفظ الناجح
+        await loadProductsFromFirebase(); 
+        alert('تم حفظ المنتج في السحابة بنجاح وتم تفريغ الخانات بنجاح! 🚀');
     } catch (e) {
         console.error("خطأ أثناء حفظ المنتج: ", e);
         alert('حدث خطأ أثناء حفظ المنتج، يرجى المحاولة مرة أخرى.');
@@ -180,6 +177,7 @@ window.deleteProduct = async function(id) {
         try {
             await deleteDoc(doc(db, "products", String(id)));
             await loadProductsFromFirebase();
+            resetForm();
             alert('تم حذف المنتج بنجاح!');
         } catch (e) {
             console.error("خطأ أثناء الحذف: ", e);
@@ -188,8 +186,8 @@ window.deleteProduct = async function(id) {
     }
 }
 
-// إعادة ضبط النموذج
-function resetForm() {
+// إعادة ضبط وتفريغ النموذج
+window.resetForm = function() {
     const form = document.getElementById('product-form');
     if (form) form.reset();
     const prodId = document.getElementById('prod-id');
