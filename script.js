@@ -1,6 +1,6 @@
-// استيراد مكتبات Firebase من شبكة بديلة لتعمل بدون VPN
-import { initializeApp } from "https://unpkg.com/firebase@11.1.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://unpkg.com/firebase@11.1.0/firebase-firestore.js";
+// استيراد مكتبات Firebase الأصلية
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 // إعدادات مشروعك السحابي على Firebase
 const firebaseConfig = {
@@ -22,8 +22,20 @@ let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
     bank: "البنك الأهلي: 1234567890 - اسم المستفيد: اسمك"
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-    loadProductsFromFirebase(); // جلب فوري من الذاكرة المحلية ثم مزامنة حية
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. قراءة المنتجات المحفوظة محلياً فوراً لمنع أي اختفاء عند التحديث
+    const cachedProducts = localStorage.getItem('cached_products');
+    if (cachedProducts) {
+        try {
+            products = JSON.parse(cachedProducts);
+            renderProducts();
+        } catch (e) {
+            console.error("خطأ في قراءة الذاكرة المؤقتة:", e);
+        }
+    }
+
+    // 2. مزامنة البيانات مع سحابة Firebase في الخلفية
+    loadProductsFromFirebase();
     
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
@@ -43,31 +55,18 @@ function saveSettings(event) {
     alert('تم حفظ الإعدادات العامة بنجاح!');
 }
 
-// جلب المنتجات بشكل فوري من الذاكرة المحلية ثم مزامنتها مع Firebase في الخلفية
+// جلب المنتجات ومزامنتها مع Firebase
 function loadProductsFromFirebase() {
-    // 1. قراءة المنتجات المخزنة محلياً وعرضها فوراً لمنع أي اختفاء أثناء التحديث
-    const cachedProducts = localStorage.getItem('cached_products');
-    if (cachedProducts) {
-        try {
-            products = JSON.parse(cachedProducts);
-            renderProducts(); // تظهر المنتجات في الفركشن الأول من الثانية دون أي اختفاء
-        } catch (e) {
-            console.error("خطأ في قراءة الذاكرة المؤقتة:", e);
-        }
-    }
-
     try {
-        // 2. الاستماع الفوري والحي للتغييرات من السحابة وتحديثها بصمت
         onSnapshot(collection(db, "products"), (querySnapshot) => {
             products = [];
             querySnapshot.forEach((documentSnapshot) => {
                 products.push({ id: documentSnapshot.id, ...documentSnapshot.data() });
             });
             
-            // حفظ النسخة الجديدة محلياً لضمان الظهور الفوري المرة القادمة
+            // حفظ النسخة المحدثة محلياً لضمان عدم اختفائها نهائياً
             localStorage.setItem('cached_products', JSON.stringify(products));
-            
-            renderProducts(); // تحديث الواجهة بأحدث البيانات من السحابة
+            renderProducts();
         }, (error) => {
             console.error("خطأ في المراقبة الحية للسحابة: ", error);
         });
@@ -84,7 +83,7 @@ function renderProducts() {
     grid.innerHTML = '';
 
     if (products.length === 0) {
-        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً في السحابة.</p>';
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #94a3b8;">لا توجد منتجات حالياً.</p>';
         return;
     }
 
@@ -99,13 +98,13 @@ function renderProducts() {
                 <div>
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
                     <h3>${product.title}</h3>
-                    <p class="duration">${product.duration}</p>
+                    <p class="duration">${product.duration || ''}</p>
                     <div class="price">${product.price} ريال</div>
                 </div>
                 <div>
-                    <div class="card-actions">
-                        <button class="btn btn-edit" onclick="editProduct('${product.id}')">تعديل</button>
-                        <button class="btn btn-delete" onclick="deleteProduct('${product.id}')">حذف</button>
+                    <div class="card-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button class="btn btn-edit" onclick="editProduct('${product.id}')" style="background:#3b82f6; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">تعديل</button>
+                        <button class="btn btn-delete" onclick="deleteProduct('${product.id}')" style="background:#ef4444; color:#fff; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">حذف</button>
                     </div>
                 </div>
             `;
@@ -114,11 +113,11 @@ function renderProducts() {
                 <div>
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
                     <h3>${product.title}</h3>
-                    <p class="duration">${product.duration}</p>
+                    <p class="duration">${product.duration || ''}</p>
                     <div class="price">${product.price} ريال</div>
                 </div>
                 <div>
-                    <button class="btn btn-buy" onclick="openBuyModal('${product.id}')">شراء الآن</button>
+                    <button class="btn btn-buy" onclick="openBuyModal('${product.id}')" style="background:#10b981; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; width:100%; margin-top:10px;">شراء الآن</button>
                 </div>
             `;
         }
@@ -126,7 +125,7 @@ function renderProducts() {
     });
 }
 
-// إضافة أو تعديل منتج بسرعة فائقة
+// إضافة أو تعديل منتج
 function handleProductSubmit(event) {
     event.preventDefault();
     
@@ -154,23 +153,23 @@ function handleProductSubmit(event) {
 }
 
 async function saveProductData(id, title, price, duration, image) {
-    // 1. تفريغ الحقول وإظهار المنتج في القائمة فوراً (بسرعة البرق دون انتظار)
-    const tempId = id || 'temp_' + Date.now();
+    const tempId = id || 'prod_' + Date.now();
     const newProductObj = { id: tempId, title, price, duration, image };
 
     if (id) {
         const index = products.findIndex(p => p.id == id);
         if (index !== -1) products[index] = newProductObj;
     } else {
-        products.unshift(newProductObj); // يظهر في أعلى القائمة فوراً
+        products.unshift(newProductObj);
     }
     
-    renderProducts(); // تحديث الشاشة محلياً ولحظياً
-    resetForm();     // تفريغ الخانات فوراً
+    // الحفظ الفوري في الذاكرة المحلية لضمان عدم اختفائه أبداً عند التحديث
+    localStorage.setItem('cached_products', JSON.stringify(products));
+    renderProducts();
+    resetForm();
 
     try {
-        // 2. إرسال البيانات للسحابة في الخلفية بصمت
-        if (id) {
+        if (id && !String(id).startsWith('prod_')) {
             const productRef = doc(db, "products", String(id));
             await setDoc(productRef, { title, price, duration, image });
         } else {
@@ -184,11 +183,9 @@ async function saveProductData(id, title, price, duration, image) {
         }
     } catch (e) {
         console.error("خطأ أثناء الحفظ في السحابة: ", e);
-        alert('حدث خطأ في الاتصال بالشبكة، يرجى التحقق من الإنترنت.');
     }
 }
 
-// تعديل منتج
 function editProduct(id) {
     const product = products.find(p => p.id == id);
     if (!product) return;
@@ -201,23 +198,23 @@ function editProduct(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// حذف منتج من سحابة Firebase بسرعة لحظية
 window.deleteProduct = async function(id) {
-    if (confirm('هل أنت متأكد من حذف هذا المنتج من السحابة؟')) {
-        // الحذف المحلي الفوري للاستجابة السريعة
+    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
         products = products.filter(p => p.id != id);
+        localStorage.setItem('cached_products', JSON.stringify(products));
         renderProducts();
         resetForm();
 
         try {
-            await deleteDoc(doc(db, "products", String(id)));
+            if (!String(id).startsWith('prod_')) {
+                await deleteDoc(doc(db, "products", String(id)));
+            }
         } catch (e) {
             console.error("خطأ أثناء الحذف: ", e);
         }
     }
 }
 
-// إعادة ضبط وتفريغ النموذج
 window.resetForm = function() {
     const form = document.getElementById('product-form');
     if (form) form.reset();
@@ -225,7 +222,6 @@ window.resetForm = function() {
     if (prodId) prodId.value = '';
 }
 
-// فتح نافذة الشراء والتحويل
 window.openBuyModal = function(productId) {
     const product = products.find(p => p.id == productId);
     if (!product) return;
@@ -234,19 +230,18 @@ window.openBuyModal = function(productId) {
     document.getElementById('modal-product-price').textContent = `${product.price} ريال`;
     document.getElementById('modal-bank-text').textContent = storeSettings.bank;
 
-    const message = encodeURIComponent(`مرحباً، أريد شراء: ${product.title}\nالمبلغ: ${product.price} ريال\nمرفق إيصال التحويل:`);
+    const message = encodeURIComponent(`مرحباً، أريد شراء: ${product.title}\nالمبلغ: ${product.price} ريال`);
     const whatsappUrl = `https://wa.me/${storeSettings.phone}?text=${message}`;
     
     document.getElementById('whatsapp-link').href = whatsappUrl;
     document.getElementById('buy-modal').classList.remove('hidden');
 }
 
-// إغلاق النافذة المنبثقة
 window.closeModal = function() {
     document.getElementById('buy-modal').classList.add('hidden');
 }
 
-// ربط الدوال بالنافذة العامة لضمان عمل الأزرار بشكل سليم في HTML
+// ربط الدوال بالنافذة العامة لضمان عمل الأزرار في HTML
 window.handleProductSubmit = handleProductSubmit;
 window.saveSettings = saveSettings;
 window.editProduct = editProduct;
