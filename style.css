@@ -115,17 +115,18 @@ body {
     font-weight: 600;
 }
 
-/* ضبط شريط البحث والترتيب ليكون بعرض المنتجات تماماً وبدون أي فراغات */
+/* ضبط دقيق 100% لمربعات البحث والترتيب لتبقى داخل الشاشة وبدون أي خروج يميناً */
 .search-sort-container {
     display: flex;
-    flex-direction: row-reverse;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 20px;
     width: 100%;
 }
 
 .search-sort-container input {
-    flex: 2.2;
+    width: 60%; /* خانة البحث تأخذ 60% من العرض وثابتة في اليمين */
     padding: 10px 12px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -136,13 +137,13 @@ body {
 }
 
 .search-sort-container select {
-    flex: 1.2;
-    padding: 10px 8px;
+    width: 38%; /* قائمة الترتيب تأخذ 38% المتبقية في اليسار */
+    padding: 10px 6px;
     background: #111827;
     border: 1px solid #1f2937;
     color: #fff;
     border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     outline: none;
     cursor: pointer;
 }
