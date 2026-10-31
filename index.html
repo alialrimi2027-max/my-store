@@ -4,72 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أثير ستور - للخدمات والمنتجات الرقمية</title>
-    <meta name="description" content="أثير ستور يقدم أفضل الخدمات والمنتجات الرقمية بأسعار منافسة وسرعة في التنفيذ.">
     <link rel="stylesheet" href="style.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- شريط الإعلانات المتحرك العلوي (يعرض النص المحفوظ من صفحة الإعدادات) -->
+    <!-- شريط الإعلانات المتحرك -->
     <div class="announcement-bar">
         <div class="announcement-content" id="marquee-text">
-            ⚡ أهلاً بكم في أثير ستور | أفضل الخدمات الرقمية
+            ⚡ أهلاً بكم في أثير ستور | أفضل الخدمات والمنتجات الرقمية بأسعار منافسة وسرعة في التنفيذ 🚀
         </div>
     </div>
 
+    <!-- شريط التنقل العلوي -->
     <header class="navbar">
-        <div class="logo">⚡ أثير ستور</div>
-        <nav class="categories-nav" id="categoriesNav">
-            <button class="nav-btn active" onclick="filterCategory('all')">الكل</button>
-        </nav>
+        <div class="logo">⚡ أثير <span>ستور</span></div>
+        <div class="categories-nav" id="categoriesNav">
+            <!-- سيتم تعبئة الأقسام ديناميكياً هنا باستثناء قسم عام -->
+        </div>
     </header>
 
-    <main class="container">
-        <!-- شريط البحث الفوري والترتيب -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h1 class="main-title" id="currentCategoryTitle" style="margin: 0;">منتجاتنا والخدمات المتاحة</h1>
-            
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <!-- نظام البحث الفوري -->
-                <input type="text" id="search-input" placeholder="🔍 ابحث عن منتج..." oninput="handleSearch(this.value)" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; font-size: 0.9rem; outline: none;">
-                
-                <select id="sort-select" onchange="sortProducts(this.value)" style="padding: 8px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px;">
-                    <option value="newest">الأساس / الأحدث</option>
-                    <option value="price-low">السعر: من الأرخص للأعلى</option>
-                    <option value="price-high">السعر: من الأعلى للأرخص</option>
-                </select>
-            </div>
+    <div class="container">
+        <h2 class="main-title" id="currentCategoryTitle">منتجاتنا والخدمات المتاحة</h2>
+
+        <!-- خانة البحث وقائمة الترتيب بجوار بعضهما -->
+        <div class="search-sort-container">
+            <input type="text" id="search-input" placeholder="ابحث عن منتج..." oninput="handleSearch(this.value)">
+            <select id="sort-select" onchange="sortProducts(this.value)">
+                <option value="newest">الأساس / الأحدث</option>
+                <option value="price-low">السعر: من الأرخص للأعلى</option>
+                <option value="price-high">السعر: من الأعلى للأرخص</option>
+            </select>
         </div>
 
-        <section class="store-section">
-            <div id="products-grid" class="products-grid">
-                <!-- يتم تحميل المنتجات هنا برمجياً -->
-            </div>
-        </section>
-    </main>
+        <!-- شبكة المنتجات -->
+        <div class="products-grid" id="products-grid">
+            <!-- سيتم عرض المنتجات هنا -->
+        </div>
+    </div>
 
-    <!-- نافذة الطلب والدفع المباشر مع زر نسخ الحساب -->
+    <!-- نافذة الشراء المنبثقة (Modal) -->
     <div id="buy-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modal-product-name">تفاصيل الطلب</h2>
-            <p class="modal-price">المبلغ المطلوب: <strong id="modal-product-price">0</strong></p>
+            <h3 id="modal-product-name" style="color: #38bdf8; margin-bottom: 8px;">اسم المنتج</h3>
+            <p style="font-size: 0.9rem; color: #94a3b8; margin-bottom: 12px;">السعر: <span id="modal-product-price" style="color: #22c55e; font-weight: bold;">0</span></p>
             
-            <div class="bank-details" style="position: relative;">
-                <h3>💳 طرق التحويل المتاحة:</h3>
-                <p id="modal-bank-text" style="margin-bottom: 10px;">جاري تحميل بيانات الحساب...</p>
-                <button type="button" onclick="copyBankDetails()" class="btn" style="background: #3b82f6; color: #fff; padding: 5px 10px; font-size: 0.8rem; width: 100%; cursor: pointer;">📋 نسخ بيانات الحساب</button>
+            <div class="instructions">
+                يرجى تحويل المبلغ إلى الحساب البنكي أدناه، ثم إرسال إيصال التحويل عبر الواتساب لإتمام طلبك فوراً:
             </div>
-
-            <p class="instructions">بعد إتمام التحويل، اضغط على الزر أدناه لإرسال الإيصال عبر الواتساب لإكمال طلبك.</p>
             
-            <a id="whatsapp-link" href="#" target="_blank" class="btn btn-whatsapp">📱 إرسال الإيصال عبر الواتساب</a>
+            <div class="bank-details" id="modal-bank-text">
+                جاري تحميل بيانات الحساب...
+            </div>
+            
+            <button type="button" class="btn" style="background: #334155; color: #38bdf8; width: 100%; margin-bottom: 12px;" onclick="copyBankDetails()">📋 نسخ بيانات الحساب</button>
+            
+            <a id="whatsapp-link" href="#" target="_blank" class="btn-whatsapp">
+                💬 إرسال الإيصال وتأكيد الطلب عبر الواتساب
+            </a>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <script src="script.js"></script>
-
 </body>
 </html>

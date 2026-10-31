@@ -12,7 +12,7 @@ body {
     line-height: 1.5;
 }
 
-/* شريط الإعلانات المتحرك هادئ وناعم */
+/* شريط الإعلانات المتحرك */
 .announcement-bar {
     background: #0284c7;
     color: #ffffff;
@@ -36,7 +36,7 @@ body {
     100% { transform: translate(-100%, 0); }
 }
 
-/* شريط التنقل العلوي المرتب */
+/* الهيدر وشريط التنقل */
 .navbar {
     display: flex;
     flex-direction: column;
@@ -64,14 +64,13 @@ body {
     color: #38bdf8;
 }
 
-/* الأقسام بتصميم ناعم ومخفف الحدة */
 .categories-nav {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     max-width: 100%;
     padding: 4px 2px;
-    scrollbar-width: none; /* إخفاء شريط التمرير المزعج */
+    scrollbar-width: none;
 }
 
 .categories-nav::-webkit-scrollbar {
@@ -109,20 +108,55 @@ body {
 
 .main-title {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #e2e8f0;
     font-size: 1.3rem;
     font-weight: 600;
 }
 
-/* شبكة المنتجات المرتبة */
+/* تنسيق البحث والترتيب بجوار بعضهما */
+.search-sort-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.search-sort-container input {
+    flex: 2;
+    padding: 10px 12px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.search-sort-container select {
+    flex: 1.2;
+    padding: 10px 8px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.search-sort-container input:focus,
+.search-sort-container select:focus {
+    border-color: #38bdf8;
+}
+
+/* شبكة وبطاقات المنتجات */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 16px;
 }
 
-/* بطاقات المنتجات المريحة للعين (بدون بروز مبالغ فيه) */
 .card {
     background-color: #111827;
     border-radius: 10px;
@@ -245,7 +279,7 @@ body {
 
 .hidden { display: none !important; }
 
-/* النافذة المنبثقة المرتبة */
+/* النافذة المنبثقة */
 .modal {
     position: fixed;
     top: 0; 

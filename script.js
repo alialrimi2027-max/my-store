@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marqueeEl.textContent = storeSettings.marquee;
     }
 
+    // تحميل المنتجات من الذاكرة المحلية فوراً وبدون أي تأخير لضمان عدم اختفائها أبداً
     const cachedProducts = localStorage.getItem('cached_products');
     if (cachedProducts) {
         try {
@@ -49,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // الاتصال بـ Firebase في الخلفية لتحديث البيانات بهدوء تفتقده المشاكل
     if (db) {
         loadProductsFromFirebase();
     }
@@ -72,12 +74,17 @@ window.saveSettings = function(event) {
 function loadProductsFromFirebase() {
     try {
         db.collection("products").onSnapshot((querySnapshot) => {
-            products = [];
+            const freshProducts = [];
             querySnapshot.forEach((doc) => {
-                products.push({ id: doc.id, ...doc.data() });
+                freshProducts.push({ id: doc.id, ...doc.data() });
             });
-            localStorage.setItem('cached_products', JSON.stringify(products));
-            renderStore();
+            
+            // تحديث المنتجات فقط إذا كانت سحابة فايربيس تحتوي على بيانات فعلية لضمان عدم مسح الشاشة
+            if (freshProducts.length > 0) {
+                products = freshProducts;
+                localStorage.setItem('cached_products', JSON.stringify(products));
+                renderStore();
+            }
         }, (error) => {
             console.error("خطأ في المراقبة الحية: ", error);
         });
