@@ -191,7 +191,7 @@ function renderProducts() {
                 </div>
                 <div>
                     <button type="button" class="btn btn-buy" onclick="openBuyModal('${product.id}')" style="background:#38bdf8; color:#0f172a; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; width:100%; margin-top:10px;">شراء الآن</button>
-                    <button type="button" onclick="shareProduct('${product.title}', '${product.price}')" class="btn" style="background: #334155; color: #38bdf8; border: none; padding: 5px; font-size: 0.8rem; width: 100%; margin-top: 6px; cursor: pointer;">🔗 مشاركة المنتج</button>
+                    <button type="button" onclick="shareProduct('${product.id}', '${product.title}', '${product.price}')" class="btn" style="background: #334155; color: #38bdf8; border: none; padding: 5px; font-size: 0.8rem; width: 100%; margin-top: 6px; cursor: pointer;">🔗 مشاركة المنتج</button>
                 </div>
             `;
         }
@@ -381,17 +381,19 @@ window.copyBankDetails = function() {
     });
 }
 
-window.shareProduct = function(title, price) {
-    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🌐 متجر أثير ستور للخدمات الرقمية`;
+window.shareProduct = function(productId, title, price) {
+    const productUrl = `${window.location.origin}${window.location.pathname}?product=${productId}`;
+    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🔗 رابط المنتج:\n${productUrl}`;
+    
     if (navigator.share) {
         navigator.share({
             title: title,
             text: shareText,
-            url: window.location.href,
+            url: productUrl,
         }).catch(err => console.log('خطأ في المشاركة', err));
     } else {
         navigator.clipboard.writeText(shareText).then(() => {
-            alert('تم نسخ تفاصيل المنتج ومشاركته بنجاح!');
+            alert('تم نسخ تفاصيل ورابط المنتج بنجاح!');
         });
     }
 }
