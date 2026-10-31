@@ -10,19 +10,25 @@ body {
     color: #f1f5f9;
     padding-bottom: 60px;
     line-height: 1.5;
+    overflow-x: hidden; /* لمنع أي تمدد أفقي مزعج للشاشة */
 }
 
-/* شريط الإعلانات المتحرك */
+/* حل مشكلة الشريط المتحرك (جعله يملأ العرض تماماً وبدون قص) */
 .announcement-bar {
     background: #0284c7;
     color: #ffffff;
     font-weight: 500;
-    padding: 6px 10px;
+    padding: 6px 0;
     overflow: hidden;
     white-space: nowrap;
     font-size: 0.85rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    width: 100%;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
 }
 
 .announcement-content {
@@ -114,17 +120,17 @@ body {
     font-weight: 600;
 }
 
-/* تنسيق البحث والترتيب متوازناً من اليمين لليسار */
+/* تصغير مربع البحث وتوزيعه بشكل متناسق مع الترتيب */
 .search-sort-container {
     display: flex;
-    flex-direction: row-reverse; /* لضمان تمركز البحث يميناً والترتيب يساراً بالعربي */
+    flex-direction: row-reverse;
     gap: 8px;
     margin-bottom: 20px;
     width: 100%;
 }
 
 .search-sort-container input {
-    flex: 2; /* خانة البحث تأخذ المساحة الأكبر في اليمين */
+    flex: 1.3; /* تصغير مساحة البحث قليلاً لتتوازن مع القائمة */
     padding: 10px 12px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -135,7 +141,7 @@ body {
 }
 
 .search-sort-container select {
-    flex: 1.2; /* قائمة الترتيب في اليسار بجوار البحث */
+    flex: 1.1; /* إعطاء مساحة متوازنة لقائمة الترتيب */
     padding: 10px 8px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -151,17 +157,18 @@ body {
     border-color: #38bdf8;
 }
 
-/* شبكة وبطاقات المنتجات */
+/* ضبط شبكة وبطاقات المنتجات للقضاء على المساحة الفارغة يساراً */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* تصغير الحد الأدنى لملء الفراغات بمرونة */
+    gap: 12px;
+    width: 100%;
 }
 
 .card {
     background-color: #111827;
     border-radius: 10px;
-    padding: 14px;
+    padding: 12px;
     text-align: center;
     border: 1px solid #1f2937;
     display: flex;
@@ -178,41 +185,41 @@ body {
 
 .card img {
     width: 100%;
-    height: 130px;
+    height: 120px;
     object-fit: cover;
     background-color: #0b1120;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     border-radius: 8px;
 }
 
 .card h3 {
     margin-bottom: 4px;
     color: #f8fafc;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 
 .card .duration {
     color: #9ca3af;
-    font-size: 0.8rem;
-    margin-bottom: 8px;
+    font-size: 0.75rem;
+    margin-bottom: 6px;
 }
 
 .card .price {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #38bdf8;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .btn {
-    padding: 8px 12px;
+    padding: 7px 10px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     transition: 0.2s;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .btn-buy {
@@ -228,8 +235,8 @@ body {
 
 .card-actions {
     display: flex;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 6px;
 }
 
 .btn-edit { background: #d97706; color: #fff; flex: 1; }
@@ -349,11 +356,11 @@ body {
 
 @media (max-width: 480px) {
     .products-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* ضمان عرض منتجين بجانب بعضهما تماماً وبدون فراغات */
         gap: 8px;
     }
-    .card { padding: 10px; }
-    .card img { height: 105px; }
-    .card h3 { font-size: 0.9rem; }
-    .card .price { font-size: 1rem; }
+    .card { padding: 9px; }
+    .card img { height: 100px; }
+    .card h3 { font-size: 0.85rem; }
+    .card .price { font-size: 0.95rem; }
 }
