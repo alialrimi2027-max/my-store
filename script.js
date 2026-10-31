@@ -383,7 +383,7 @@ window.copyBankDetails = function() {
 
 window.shareProduct = function(productId, title, price) {
     const productUrl = `${window.location.origin}${window.location.pathname}?product=${productId}`;
-    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🔗 رابط المنتج:\n${productUrl}`;
+    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🌐 رابط المنتج المباشر:\n${productUrl}`;
     
     if (navigator.share) {
         navigator.share({
