@@ -52,6 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (db) {
         loadProductsFromFirebase();
     }
+
+    // فتح الرابط وتحديد المنتج تلقائياً عند الدخول من رابط المشاركة
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetProductId = urlParams.get('product');
+    if (targetProductId) {
+        setTimeout(() => {
+            const product = products.find(p => p.id == targetProductId);
+            if (product) {
+                searchQuery = product.title.toLowerCase();
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) searchInput.value = product.title;
+                renderProducts();
+            }
+        }, 800);
+    }
 });
 
 window.saveSettings = function(event) {
@@ -383,7 +398,7 @@ window.copyBankDetails = function() {
 
 window.shareProduct = function(productId, title, price) {
     const productUrl = `${window.location.origin}${window.location.pathname}?product=${productId}`;
-    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🌐 رابط المنتج المباشر:\n${productUrl}`;
+    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🔗 الرابط المباشر:\n${productUrl}`;
     
     if (navigator.share) {
         navigator.share({
