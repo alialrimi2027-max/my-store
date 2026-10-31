@@ -10,25 +10,20 @@ body {
     color: #f1f5f9;
     padding-bottom: 60px;
     line-height: 1.5;
-    overflow-x: hidden; /* لمنع أي تمدد أفقي مزعج للشاشة */
+    overflow-x: hidden;
 }
 
-/* حل مشكلة الشريط المتحرك (جعله يملأ العرض تماماً وبدون قص) */
+/* شريط الإعلانات المتحرك بمدى كامل وسليم */
 .announcement-bar {
     background: #0284c7;
     color: #ffffff;
     font-weight: 500;
-    padding: 6px 0;
+    padding: 6px 12px;
     overflow: hidden;
     white-space: nowrap;
     font-size: 0.85rem;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100%;
 }
 
 .announcement-content {
@@ -120,17 +115,17 @@ body {
     font-weight: 600;
 }
 
-/* تصغير مربع البحث وتوزيعه بشكل متناسق مع الترتيب */
+/* ضبط شريط البحث والترتيب ليكون بعرض المنتجات تماماً وبدون أي فراغات */
 .search-sort-container {
     display: flex;
     flex-direction: row-reverse;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 20px;
     width: 100%;
 }
 
 .search-sort-container input {
-    flex: 1.3; /* تصغير مساحة البحث قليلاً لتتوازن مع القائمة */
+    flex: 2.2;
     padding: 10px 12px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -141,7 +136,7 @@ body {
 }
 
 .search-sort-container select {
-    flex: 1.1; /* إعطاء مساحة متوازنة لقائمة الترتيب */
+    flex: 1.2;
     padding: 10px 8px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -157,18 +152,18 @@ body {
     border-color: #38bdf8;
 }
 
-/* ضبط شبكة وبطاقات المنتجات للقضاء على المساحة الفارغة يساراً */
+/* شبكة وبطاقات المنتجات متناسقة العرض تماماً */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* تصغير الحد الأدنى لملء الفراغات بمرونة */
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
     width: 100%;
 }
 
 .card {
     background-color: #111827;
     border-radius: 10px;
-    padding: 12px;
+    padding: 10px;
     text-align: center;
     border: 1px solid #1f2937;
     display: flex;
@@ -185,7 +180,7 @@ body {
 
 .card img {
     width: 100%;
-    height: 120px;
+    height: 110px;
     object-fit: cover;
     background-color: #0b1120;
     margin-bottom: 8px;
@@ -195,7 +190,7 @@ body {
 .card h3 {
     margin-bottom: 4px;
     color: #f8fafc;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
 }
 
@@ -206,7 +201,7 @@ body {
 }
 
 .card .price {
-    font-size: 1.05rem;
+    font-size: 1rem;
     color: #38bdf8;
     font-weight: 700;
     margin-bottom: 8px;
@@ -356,11 +351,11 @@ body {
 
 @media (max-width: 480px) {
     .products-grid {
-        grid-template-columns: repeat(2, 1fr); /* ضمان عرض منتجين بجانب بعضهما تماماً وبدون فراغات */
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
-    .card { padding: 9px; }
-    .card img { height: 100px; }
+    .card { padding: 8px; }
+    .card img { height: 95px; }
     .card h3 { font-size: 0.85rem; }
     .card .price { font-size: 0.95rem; }
 }
