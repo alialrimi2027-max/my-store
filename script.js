@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         marqueeEl.textContent = storeSettings.marquee;
     }
 
-    // تحميل المنتجات من الذاكرة المحلية فوراً وبدون أي تأخير لضمان عدم اختفائها أبداً
     const cachedProducts = localStorage.getItem('cached_products');
     if (cachedProducts) {
         try {
@@ -50,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // الاتصال بـ Firebase في الخلفية لتحديث البيانات بهدوء تفتقده المشاكل
     if (db) {
         loadProductsFromFirebase();
     }
@@ -79,7 +77,6 @@ function loadProductsFromFirebase() {
                 freshProducts.push({ id: doc.id, ...doc.data() });
             });
             
-            // تحديث المنتجات فقط إذا كانت سحابة فايربيس تحتوي على بيانات فعلية لضمان عدم مسح الشاشة
             if (freshProducts.length > 0) {
                 products = freshProducts;
                 localStorage.setItem('cached_products', JSON.stringify(products));
@@ -102,7 +99,6 @@ function renderCategoryButtons() {
     const nav = document.getElementById('categoriesNav');
     if (!nav) return;
 
-    // استخراج الأقسام مع استبعاد قسم "عام" تماماً
     const categories = [...new Set(products.map(p => p.category ? p.category.trim() : ''))]
                        .filter(cat => cat !== '' && cat !== 'عام');
     
@@ -164,7 +160,7 @@ function renderProducts() {
         let dateString = '';
         if (product.createdAt) {
             const d = new Date(product.createdAt);
-            dateString = `<p style="font-size: 0.75rem; color: #64748b; margin-bottom: 5px;">📅 ${d.toLocaleDateString('ar-SA')} - ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>`;
+            dateString = `<p style="font-size: 0.7rem; color: #64748b; margin-top: 4px; margin-bottom: 4px;">📅 ${d.toLocaleDateString('ar-SA')} - ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>`;
         }
         
         if (isAdminPage) {
@@ -173,9 +169,9 @@ function renderProducts() {
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
                     <h3>${product.title}</h3>
                     <p style="color: #38bdf8; font-size: 0.85rem; margin-bottom: 3px;">القسم: ${product.category || 'عام'}</p>
-                    ${dateString}
                     <p class="duration">${product.duration || ''}</p>
                     <div class="price">${product.price} ريال</div>
+                    ${dateString}
                 </div>
                 <div>
                     <div class="card-actions" style="display: flex; gap: 8px; margin-top: 10px;">
@@ -189,9 +185,9 @@ function renderProducts() {
                 <div>
                     ${product.image ? `<img src="${product.image}" alt="${product.title}">` : ''}
                     <h3>${product.title}</h3>
-                    ${dateString}
                     <p class="duration">${product.duration || ''}</p>
                     <div class="price">${product.price} ريال</div>
+                    ${dateString}
                 </div>
                 <div>
                     <button type="button" class="btn btn-buy" onclick="openBuyModal('${product.id}')" style="background:#38bdf8; color:#0f172a; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; width:100%; margin-top:10px;">شراء الآن</button>

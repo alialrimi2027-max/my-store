@@ -115,7 +115,7 @@ body {
     font-weight: 600;
 }
 
-/* ضبط دقيق 100% لمربعات البحث والترتيب لتبقى داخل الشاشة وبدون أي خروج يميناً */
+/* ضبط دقيق 100% لمربعات البحث والترتيب لتبقى داخل الشاشة وبدون أي قص */
 .search-sort-container {
     display: flex;
     justify-content: space-between;
@@ -126,7 +126,7 @@ body {
 }
 
 .search-sort-container input {
-    width: 60%; /* خانة البحث تأخذ 60% من العرض وثابتة في اليمين */
+    width: 60%;
     padding: 10px 12px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -137,15 +137,16 @@ body {
 }
 
 .search-sort-container select {
-    width: 38%; /* قائمة الترتيب تأخذ 38% المتبقية في اليسار */
-    padding: 10px 6px;
+    width: 38%;
+    padding: 10px 4px;
     background: #111827;
     border: 1px solid #1f2937;
     color: #fff;
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem; /* حجم خط منضبط يظهر عبارة الأساس / الأحدث كاملة بدون قص */
     outline: none;
     cursor: pointer;
+    text-align: right;
 }
 
 .search-sort-container input:focus,
