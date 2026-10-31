@@ -114,16 +114,17 @@ body {
     font-weight: 600;
 }
 
-/* تنسيق البحث والترتيب بجوار بعضهما */
+/* تنسيق البحث والترتيب متوازناً من اليمين لليسار */
 .search-sort-container {
     display: flex;
+    flex-direction: row-reverse; /* لضمان تمركز البحث يميناً والترتيب يساراً بالعربي */
     gap: 8px;
     margin-bottom: 20px;
     width: 100%;
 }
 
 .search-sort-container input {
-    flex: 2;
+    flex: 2; /* خانة البحث تأخذ المساحة الأكبر في اليمين */
     padding: 10px 12px;
     background: #111827;
     border: 1px solid #1f2937;
@@ -134,7 +135,7 @@ body {
 }
 
 .search-sort-container select {
-    flex: 1.2;
+    flex: 1.2; /* قائمة الترتيب في اليسار بجوار البحث */
     padding: 10px 8px;
     background: #111827;
     border: 1px solid #1f2937;
