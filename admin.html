@@ -3,34 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - متجر الصديق</title>
+    <title>إدارة المنتجات - أثير ستور</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
     <header class="navbar">
-        <div class="logo">⚙️ لوحة <span>التحكم</span></div>
-        <a href="index.html" class="btn btn-cancel" style="text-decoration: none; padding: 5px 15px;">عرض المتجر 🌐</a>
+        <div class="logo">📦 إدارة <span>المنتجات - أثير ستور</span></div>
+        <div style="display: flex; gap: 10px;">
+            <a href="settings.html" class="btn btn-save" style="text-decoration: none; padding: 5px 12px; font-size: 0.85rem;">⚙️ الإعدادات والإعلانات</a>
+            <a href="index.html" class="btn btn-cancel" style="text-decoration: none; padding: 5px 12px; font-size: 0.85rem;">عرض المتجر 🌐</a>
+        </div>
     </header>
 
     <main class="container">
-        <!-- لوحة التحكم وإدارة الإعدادات والمنتجات -->
         <section id="admin-panel" class="admin-section" style="margin-top: 20px;">
-            <h2>⚙️ إعدادات المتجر والتحويل</h2>
-            <form id="settings-form" onsubmit="saveSettings(event)" style="margin-bottom: 30px; border-bottom: 1px solid #334155; padding-bottom: 20px;">
-                <div class="form-group">
-                    <label>رقم الواتساب لتلقي الطلبات (بدون علامة +، مع المفتاح الدولي):</label>
-                    <input type="text" id="setting-phone" placeholder="مثال: 966500000000" required>
-                </div>
-                <div class="form-group">
-                    <label>تفاصيل الحساب البنكي / طرق الدفع:</label>
-                    <input type="text" id="setting-bank" placeholder="مثال: البنك الأهلي: 123456789 - اسم المستفيد: فلان">
-                </div>
-                <button type="submit" class="btn btn-save">حفظ الإعدادات العامة</button>
-            </form>
-
-            <h2>📦 إدارة المنتجات (إضافة / تعديل / حذف)</h2>
-            <form id="product-form" onsubmit="handleProductSubmit(event)">
+            <h2>📦 إضافة / تعديل منتج</h2>
+            <form id="product-form" onsubmit="handleProductSubmit(event)" style="position: relative; z-index: 10;">
                 <input type="hidden" id="prod-id">
                 
                 <div class="form-group">
@@ -38,6 +30,18 @@
                     <input type="text" id="prod-title" placeholder="مثال: المنتج الأول" required>
                 </div>
                 
+                <div class="form-group">
+                    <label>القسم:</label>
+                    <select id="prod-category" class="form-control" style="width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px; font-size: 0.95rem;" onchange="checkCustomCategory(this)">
+                        <option value="هواتف">هواتف</option>
+                        <option value="حوالات">حوالات</option>
+                        <option value="إكسسوارات">إكسسوارات</option>
+                        <option value="خدمات رقمية">خدمات رقمية</option>
+                        <option value="custom">➕ إضافة قسم جديد...</option>
+                    </select>
+                    <input type="text" id="custom-category-input" placeholder="اكتب اسم القسم الجديد هنا..." style="display: none; margin-top: 8px; width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 6px;">
+                </div>
+
                 <div class="form-group">
                     <label>السعر:</label>
                     <input type="number" id="prod-price" placeholder="مثال: 50" required>
@@ -50,24 +54,36 @@
 
                 <div class="form-group">
                     <label>صورة المنتج من الجهاز:</label>
-                    <input type="file" id="prod-image-file" accept="image/*">
+                    <input type="file" id="prod-image-file" accept="image/*" style="padding: 5px;">
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-save">حفظ المنتج</button>
-                    <button type="button" class="btn btn-cancel" onclick="resetForm()">إلغاء</button>
+                <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px; position: relative; z-index: 20;">
+                    <button type="submit" class="btn btn-save" style="cursor: pointer; padding: 12px; font-size: 1rem; flex: 1;">حفظ المنتج</button>
+                    <button type="button" class="btn btn-cancel" onclick="resetForm()" style="cursor: pointer; padding: 12px; font-size: 1rem; flex: 1;">إلغاء</button>
                 </div>
             </form>
 
-            <!-- جدول أو عرض مصغر للمنتجات في لوحة التحكم لإدارتها -->
             <h2 style="margin-top: 40px;">قائمة المنتجات الحالية:</h2>
             <div id="products-grid" class="products-grid" style="margin-top: 20px;">
-                <!-- يتم تحميل المنتجات هنا لأجل التعديل والحذف -->
+                <!-- يتم تحميل المنتجات هنا -->
             </div>
         </section>
     </main>
 
-    <script type="module" src="script.js"></script>
+    <script>
+        function checkCustomCategory(selectObj) {
+            const customInput = document.getElementById('custom-category-input');
+            if (selectObj.value === 'custom') {
+                customInput.style.display = 'block';
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                customInput.required = false;
+            }
+        }
+    </script>
+    <script src="script.js"></script>
 
 </body>
 </html>

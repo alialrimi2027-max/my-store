@@ -11,13 +11,39 @@ body {
     padding-bottom: 50px;
 }
 
+/* شريط الإعلانات المتحرك المتناسق */
+.announcement-bar {
+    background: linear-gradient(90deg, #0284c7, #38bdf8, #0284c7);
+    color: #0f172a;
+    font-weight: bold;
+    padding: 8px 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 100%;
+}
+
+.announcement-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-100%, 0); }
+}
+
 .navbar {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     background-color: #1e293b;
     padding: 15px 5%;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    gap: 15px;
 }
 
 .logo {
@@ -29,19 +55,40 @@ body {
     color: #38bdf8;
 }
 
-.admin-btn {
-    background: #334155;
-    color: #fff;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 0.9rem;
+.categories-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    max-width: 100%;
+    padding-bottom: 5px;
+    scrollbar-width: thin;
 }
 
-.admin-btn:hover {
-    background: #475569;
+.categories-nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.categories-nav::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
+.nav-btn {
+    background: #334155;
+    color: #cbd5e1;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.nav-btn:hover, .nav-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    font-weight: bold;
 }
 
 .container {
@@ -57,7 +104,6 @@ body {
     font-size: 1.5rem;
 }
 
-/* شبكة المنتجات (مضبوطة لتعرض 3 منتجات أو أكثر في الصف حسب الشاشة) */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -84,7 +130,8 @@ body {
 .card img {
     width: 100%;
     height: 140px;
-    object-fit: cover;
+    object-fit: contain;
+    background-color: #0f172a;
     margin: 0 auto 12px;
     border-radius: 8px;
 }
@@ -138,7 +185,6 @@ body {
 .btn-edit { background: #f59e0b; color: #fff; flex: 1; }
 .btn-delete { background: #ef4444; color: #fff; flex: 1; }
 
-/* لوحة التحكم */
 .admin-section {
     background: #1e293b;
     padding: 20px;
@@ -184,14 +230,18 @@ body {
 
 .hidden { display: none !important; }
 
-/* النافذة المنبثقة للتحويل */
+/* إصلاح النافذة المنبثقة (Modal) لتظهر في المنتصف وفوق كل العناصر */
 .modal {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
     padding: 15px;
 }
 
@@ -202,12 +252,15 @@ body {
     width: 100%;
     max-width: 400px;
     position: relative;
-    border: 1px solid #475569;
+    border: 1px solid #38bdf8;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    text-align: right;
 }
 
 .close-btn {
     position: absolute;
-    left: 15px; top: 10px;
+    left: 15px; 
+    top: 10px;
     font-size: 24px;
     cursor: pointer;
     color: #94a3b8;
@@ -220,12 +273,14 @@ body {
     margin: 12px 0;
     line-height: 1.6;
     font-size: 0.9rem;
+    border: 1px solid #334155;
 }
 
 .instructions {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #94a3b8;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+    line-height: 1.5;
 }
 
 .btn-whatsapp {
@@ -235,34 +290,19 @@ body {
     text-decoration: none;
     text-align: center;
     border-radius: 6px;
-    padding: 10px;
+    padding: 12px;
+    font-weight: bold;
+    width: 100%;
 }
 
-/* تحسينات إضافية خاصة بالشاشات الصغيرة جداً (الهواتف المحمولة) */
 @media (max-width: 480px) {
     .products-grid {
-        grid-template-columns: repeat(2, 1fr); /* جعلها منتجين بجانب بعض حتى على الهواتف المتوسطة، أو يمكنك جعلها 1 إذا أردت */
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    
-    .card {
-        padding: 10px;
-    }
-
-    .card img {
-        height: 100px;
-    }
-
-    .card h3 {
-        font-size: 0.95rem;
-    }
-
-    .card .price {
-        font-size: 1rem;
-    }
-
-    .btn {
-        padding: 8px 10px;
-        font-size: 0.85rem;
-    }
+    .card { padding: 10px; }
+    .card img { height: 100px; }
+    .card h3 { font-size: 0.95rem; }
+    .card .price { font-size: 1rem; }
+    .btn { padding: 8px 10px; font-size: 0.85rem; }
 }

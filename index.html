@@ -3,41 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر الصديق - للخدمات والمنتجات الرقمية</title>
-    <meta name="description" content="متجر الصديق يقدم أفضل الخدمات والمنتجات الرقمية بأسعار منافسة وسرعة في التنفيذ.">
-    <meta name="keywords" content="متجر الصديق, خدمات رقمية, شراء منتجات, متجر الكتروني">
+    <title>أثير ستور - للخدمات والمنتجات الرقمية</title>
+    <meta name="description" content="أثير ستور يقدم أفضل الخدمات والمنتجات الرقمية بأسعار منافسة وسرعة في التنفيذ.">
     <link rel="stylesheet" href="style.css">
-    <meta name="google-site-verification" content="fsTWbj-opVdU26ZtIvQet3evFVe6fqpGQrzba-K4t9s" />
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- الهيدر / الشريط العلوي (للعملاء فقط بدون لوحة تحكم) -->
+    <!-- شريط الإعلانات المتحرك العلوي (يعرض النص المحفوظ من صفحة الإعدادات) -->
+    <div class="announcement-bar">
+        <div class="announcement-content" id="marquee-text">
+            ⚡ أهلاً بكم في أثير ستور | أفضل الخدمات الرقمية
+        </div>
+    </div>
+
     <header class="navbar">
-        <div class="logo">⚡ متجر الصديق</div>
+        <div class="logo">⚡ أثير ستور</div>
+        <nav class="categories-nav" id="categoriesNav">
+            <button class="nav-btn active" onclick="filterCategory('all')">الكل</button>
+        </nav>
     </header>
 
     <main class="container">
-        
-        <!-- قسم عرض المنتجات للزوار -->
+        <!-- شريط البحث الفوري والترتيب -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h1 class="main-title" id="currentCategoryTitle" style="margin: 0;">منتجاتنا والخدمات المتاحة</h1>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <!-- نظام البحث الفوري -->
+                <input type="text" id="search-input" placeholder="🔍 ابحث عن منتج..." oninput="handleSearch(this.value)" style="padding: 8px 12px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; font-size: 0.9rem; outline: none;">
+                
+                <select id="sort-select" onchange="sortProducts(this.value)" style="padding: 8px; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px;">
+                    <option value="newest">الأساس / الأحدث</option>
+                    <option value="price-low">السعر: من الأرخص للأعلى</option>
+                    <option value="price-high">السعر: من الأعلى للأرخص</option>
+                </select>
+            </div>
+        </div>
+
         <section class="store-section">
-            <h1 class="main-title">منتجاتنا والخدمات المتاحة</h1>
             <div id="products-grid" class="products-grid">
                 <!-- يتم تحميل المنتجات هنا برمجياً -->
             </div>
         </section>
-
     </main>
 
-    <!-- نافذة الطلب والدفع المباشر للعملاء -->
+    <!-- نافذة الطلب والدفع المباشر مع زر نسخ الحساب -->
     <div id="buy-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <h2 id="modal-product-name">تفاصيل الطلب</h2>
             <p class="modal-price">المبلغ المطلوب: <strong id="modal-product-price">0</strong></p>
             
-            <div class="bank-details">
+            <div class="bank-details" style="position: relative;">
                 <h3>💳 طرق التحويل المتاحة:</h3>
-                <p id="modal-bank-text">جاري تحميل بيانات الحساب...</p>
+                <p id="modal-bank-text" style="margin-bottom: 10px;">جاري تحميل بيانات الحساب...</p>
+                <button type="button" onclick="copyBankDetails()" class="btn" style="background: #3b82f6; color: #fff; padding: 5px 10px; font-size: 0.8rem; width: 100%; cursor: pointer;">📋 نسخ بيانات الحساب</button>
             </div>
 
             <p class="instructions">بعد إتمام التحويل، اضغط على الزر أدناه لإرسال الإيصال عبر الواتساب لإكمال طلبك.</p>
@@ -46,7 +69,7 @@
         </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
