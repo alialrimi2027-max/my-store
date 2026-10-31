@@ -53,17 +53,35 @@ document.addEventListener('DOMContentLoaded', () => {
         loadProductsFromFirebase();
     }
 
-    // فتح الرابط وتحديد المنتج تلقائياً عند الدخول من رابط المشاركة
+    // الانتقال التلقائي للقسم والمنتج والتأشير عليه عند فتح الرابط
     const urlParams = new URLSearchParams(window.location.search);
     const targetProductId = urlParams.get('product');
     if (targetProductId) {
         setTimeout(() => {
             const product = products.find(p => p.id == targetProductId);
             if (product) {
+                if (product.category && product.category !== 'عام') {
+                    currentCategory = product.category.trim();
+                } else {
+                    currentCategory = 'all';
+                }
+                
                 searchQuery = product.title.toLowerCase();
                 const searchInput = document.getElementById('search-input');
                 if (searchInput) searchInput.value = product.title;
-                renderProducts();
+                
+                renderStore();
+
+                setTimeout(() => {
+                    const cards = document.querySelectorAll('.card');
+                    cards.forEach(card => {
+                        if (card.innerHTML.includes(product.title)) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            card.style.borderColor = '#38bdf8';
+                            card.style.boxShadow = '0 0 20px rgba(56, 189, 248, 0.5)';
+                        }
+                    });
+                }, 400);
             }
         }, 800);
     }
@@ -398,7 +416,7 @@ window.copyBankDetails = function() {
 
 window.shareProduct = function(productId, title, price) {
     const productUrl = `${window.location.origin}${window.location.pathname}?product=${productId}`;
-    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🔗 الرابط المباشر:\n${productUrl}`;
+    const shareText = `شاهد هذا المنتج المميز في أثير ستور:\n📦 ${title}\n💰 السعر: ${price} ريال\n🔗 اضغط هنا للعرض المباشر:`;
     
     if (navigator.share) {
         navigator.share({
@@ -407,7 +425,8 @@ window.shareProduct = function(productId, title, price) {
             url: productUrl,
         }).catch(err => console.log('خطأ في المشاركة', err));
     } else {
-        navigator.clipboard.writeText(shareText).then(() => {
+        const fullText = `${shareText}\n${productUrl}`;
+        navigator.clipboard.writeText(fullText).then(() => {
             alert('تم نسخ تفاصيل ورابط المنتج بنجاح!');
         });
     }
