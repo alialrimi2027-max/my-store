@@ -6,28 +6,29 @@
 }
 
 body {
-    background-color: #0f172a;
-    color: #f8fafc;
-    padding-bottom: 50px;
+    background-color: #0b1120;
+    color: #f1f5f9;
+    padding-bottom: 60px;
+    line-height: 1.5;
 }
 
-/* شريط الإعلانات المتحرك المتناسق */
+/* شريط الإعلانات المتحرك هادئ وناعم */
 .announcement-bar {
-    background: linear-gradient(90deg, #0284c7, #38bdf8, #0284c7);
-    color: #0f172a;
-    font-weight: bold;
-    padding: 8px 10px;
+    background: #0284c7;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 6px 10px;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 0.9rem;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    font-size: 0.85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     width: 100%;
 }
 
 .announcement-content {
     display: inline-block;
     padding-left: 100%;
-    animation: marquee 18s linear infinite;
+    animation: marquee 20s linear infinite;
 }
 
 @keyframes marquee {
@@ -35,139 +36,153 @@ body {
     100% { transform: translate(-100%, 0); }
 }
 
+/* شريط التنقل العلوي المرتب */
 .navbar {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    background-color: #1e293b;
-    padding: 15px 5%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    gap: 15px;
+    background-color: #111827;
+    padding: 15px 20px;
+    border-bottom: 1px solid #1f2937;
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .navbar {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 .logo {
-    font-size: 1.3rem;
-    font-weight: bold;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 .logo span {
     color: #38bdf8;
 }
 
+/* الأقسام بتصميم ناعم ومخفف الحدة */
 .categories-nav {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     max-width: 100%;
-    padding-bottom: 5px;
-    scrollbar-width: thin;
+    padding: 4px 2px;
+    scrollbar-width: none; /* إخفاء شريط التمرير المزعج */
 }
 
 .categories-nav::-webkit-scrollbar {
-    height: 4px;
-}
-
-.categories-nav::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    display: none;
 }
 
 .nav-btn {
-    background: #334155;
-    color: #cbd5e1;
+    background: #1f2937;
+    color: #9ca3af;
     border: none;
-    padding: 6px 14px;
-    border-radius: 20px;
+    padding: 6px 16px;
+    border-radius: 50px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.2s ease;
     font-size: 0.85rem;
     white-space: nowrap;
 }
 
-.nav-btn:hover, .nav-btn.active {
+.nav-btn:hover {
+    background: #374151;
+    color: #fff;
+}
+
+.nav-btn.active {
     background: #38bdf8;
-    color: #0f172a;
-    font-weight: bold;
+    color: #0b1120;
+    font-weight: 600;
 }
 
 .container {
     width: 92%;
-    max-width: 1200px;
-    margin: 20px auto;
+    max-width: 1100px;
+    margin: 25px auto;
 }
 
 .main-title {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     color: #e2e8f0;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 600;
 }
 
+/* شبكة المنتجات المرتبة */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
 }
 
+/* بطاقات المنتجات المريحة للعين (بدون بروز مبالغ فيه) */
 .card {
-    background-color: #1e293b;
-    border-radius: 12px;
-    padding: 15px;
+    background-color: #111827;
+    border-radius: 10px;
+    padding: 14px;
     text-align: center;
-    border: 1px solid #334155;
+    border: 1px solid #1f2937;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: all 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 .card img {
     width: 100%;
-    height: 140px;
-    object-fit: contain;
-    background-color: #0f172a;
-    margin: 0 auto 12px;
+    height: 130px;
+    object-fit: cover;
+    background-color: #0b1120;
+    margin-bottom: 10px;
     border-radius: 8px;
 }
 
 .card h3 {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     color: #f8fafc;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 600;
 }
 
 .card .duration {
-    color: #94a3b8;
-    font-size: 0.85rem;
-    margin-bottom: 10px;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
 }
 
 .card .price {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #38bdf8;
-    font-weight: bold;
-    margin-bottom: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .btn {
-    padding: 10px 15px;
+    padding: 8px 12px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     transition: 0.2s;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .btn-buy {
     background-color: #38bdf8;
-    color: #0f172a;
+    color: #0b1120;
     width: 100%;
 }
 
@@ -179,45 +194,45 @@ body {
 .card-actions {
     display: flex;
     gap: 8px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
-.btn-edit { background: #f59e0b; color: #fff; flex: 1; }
-.btn-delete { background: #ef4444; color: #fff; flex: 1; }
+.btn-edit { background: #d97706; color: #fff; flex: 1; }
+.btn-delete { background: #dc2626; color: #fff; flex: 1; }
 
 .admin-section {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    border: 1px solid #38bdf8;
+    background: #111827;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid #1f2937;
 }
 
 .admin-section h2 {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     color: #38bdf8;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .form-group {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    color: #cbd5e1;
-    font-size: 0.9rem;
+    margin-bottom: 4px;
+    color: #9ca3af;
+    font-size: 0.85rem;
 }
 
 .form-group input {
     width: 100%;
-    padding: 10px;
-    background: #0f172a;
-    border: 1px solid #334155;
+    padding: 9px 12px;
+    background: #0b1120;
+    border: 1px solid #374151;
     color: #fff;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .form-actions {
@@ -225,19 +240,20 @@ body {
     gap: 10px;
 }
 
-.btn-save { background: #22c55e; color: #fff; flex: 1; }
-.btn-cancel { background: #64748b; color: #fff; flex: 1; }
+.btn-save { background: #16a34a; color: #fff; flex: 1; }
+.btn-cancel { background: #4b5563; color: #fff; flex: 1; }
 
 .hidden { display: none !important; }
 
-/* إصلاح النافذة المنبثقة (Modal) لتظهر في المنتصف وفوق كل العناصر */
+/* النافذة المنبثقة المرتبة */
 .modal {
     position: fixed;
     top: 0; 
     left: 0; 
     width: 100%; 
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(3px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -246,63 +262,63 @@ body {
 }
 
 .modal-content {
-    background: #1e293b;
+    background: #111827;
     padding: 20px;
     border-radius: 12px;
     width: 100%;
-    max-width: 400px;
+    max-width: 380px;
     position: relative;
-    border: 1px solid #38bdf8;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid #374151;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
     text-align: right;
 }
 
 .close-btn {
     position: absolute;
     left: 15px; 
-    top: 10px;
-    font-size: 24px;
+    top: 12px;
+    font-size: 22px;
     cursor: pointer;
-    color: #94a3b8;
+    color: #9ca3af;
 }
 
 .bank-details {
-    background: #0f172a;
-    padding: 12px;
-    border-radius: 8px;
-    margin: 12px 0;
-    line-height: 1.6;
-    font-size: 0.9rem;
-    border: 1px solid #334155;
+    background: #0b1120;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+    line-height: 1.5;
+    font-size: 0.85rem;
+    border: 1px solid #1f2937;
 }
 
 .instructions {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    margin-bottom: 15px;
-    line-height: 1.5;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 12px;
+    line-height: 1.4;
 }
 
 .btn-whatsapp {
     display: block;
-    background-color: #25d366;
+    background-color: #22c55e;
     color: #fff;
     text-decoration: none;
     text-align: center;
     border-radius: 6px;
-    padding: 12px;
-    font-weight: bold;
+    padding: 10px;
+    font-weight: 600;
     width: 100%;
+    font-size: 0.95rem;
 }
 
 @media (max-width: 480px) {
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        gap: 8px;
     }
     .card { padding: 10px; }
-    .card img { height: 100px; }
-    .card h3 { font-size: 0.95rem; }
+    .card img { height: 105px; }
+    .card h3 { font-size: 0.9rem; }
     .card .price { font-size: 1rem; }
-    .btn { padding: 8px 10px; font-size: 0.85rem; }
 }

@@ -16,6 +16,7 @@ let products = [];
 let currentCategory = 'all';
 let currentSort = 'newest';
 let searchQuery = '';
+
 let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
     phone: "966500000000",
     bank: "البنك الأهلي: 1234567890 - اسم المستفيد: اسمك",
@@ -23,7 +24,6 @@ let storeSettings = JSON.parse(localStorage.getItem('store_settings')) || {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // تعبئة حقول الإعدادات في صفحة settings.html المستقلة
     const phoneInput = document.getElementById('setting-phone');
     const bankInput = document.getElementById('setting-bank');
     const marqueeInput = document.getElementById('setting-marquee');
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         marqueeInput.value = storeSettings.marquee;
     }
 
-    // تحديث نص الشريط في الواجهة الرئيسية index.html
     const marqueeEl = document.getElementById('marquee-text');
     if (marqueeEl) {
         marqueeEl.textContent = storeSettings.marquee;
@@ -55,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// حفظ الإعدادات من صفحة settings.html المستقلة
 window.saveSettings = function(event) {
     event.preventDefault();
     const phoneEl = document.getElementById('setting-phone');
@@ -97,7 +95,9 @@ function renderCategoryButtons() {
     const nav = document.getElementById('categoriesNav');
     if (!nav) return;
 
-    const categories = [...new Set(products.map(p => p.category ? p.category.trim() : 'عام'))];
+    // استخراج الأقسام مع استبعاد قسم "عام" تماماً
+    const categories = [...new Set(products.map(p => p.category ? p.category.trim() : ''))]
+                       .filter(cat => cat !== '' && cat !== 'عام');
     
     let html = `<button class="nav-btn ${currentCategory === 'all' ? 'active' : ''}" onclick="filterCategory('all')">الكل</button>`;
     
@@ -187,7 +187,7 @@ function renderProducts() {
                     <div class="price">${product.price} ريال</div>
                 </div>
                 <div>
-                    <button type="button" class="btn btn-buy" onclick="openBuyModal('${product.id}')" style="background:#10b981; color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; width:100%; margin-top:10px;">شراء الآن</button>
+                    <button type="button" class="btn btn-buy" onclick="openBuyModal('${product.id}')" style="background:#38bdf8; color:#0f172a; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; width:100%; margin-top:10px;">شراء الآن</button>
                     <button type="button" onclick="shareProduct('${product.title}', '${product.price}')" class="btn" style="background: #334155; color: #38bdf8; border: none; padding: 5px; font-size: 0.8rem; width: 100%; margin-top: 6px; cursor: pointer;">🔗 مشاركة المنتج</button>
                 </div>
             `;
